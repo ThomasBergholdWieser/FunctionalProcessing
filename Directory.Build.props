@@ -1,5 +1,12 @@
 <Project>
   <PropertyGroup>
+    <Copyright>2023 Thomas Berghold-Wieser</Copyright>
+    <PackageId>$(AssemblyName)</PackageId>
+    <PackageProjectUrl>https://github.com/ThomasBergholdWieser/FunctionalProcessing</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/ThomasBergholdWieser/FunctionalProcessing</RepositoryUrl>
+  <PropertyGroup>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
