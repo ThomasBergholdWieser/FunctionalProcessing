@@ -6,6 +6,7 @@
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/ThomasBergholdWieser/FunctionalProcessing</RepositoryUrl>
+  </PropertyGroup>
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
