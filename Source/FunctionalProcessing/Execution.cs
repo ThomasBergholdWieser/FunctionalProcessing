@@ -8,27 +8,28 @@ public static class Execution
 {
     private static readonly ExecutionResult VoidSuccess = new();
 
-    public static ExecutionResult<TResult> Success<TResult>(TResult value) => value;
+    public static ExecutionResult<TResult> Success<TResult>(TResult value) where TResult : notnull => value;
+        
 
     public static ExecutionResult Success() =>
         VoidSuccess;
 
-    public static ExecutionResult<TResult> Failure<TResult>(IEnumerable<string> messages, int? errorCode = null) =>
+    public static ExecutionResult<TResult> Failure<TResult>(IEnumerable<string> messages, int? errorCode = null) where TResult : notnull =>
         new(new ExecutionError(messages) { ErrorCode = errorCode });
 
     public static ExecutionResult Failure(IEnumerable<string> messages, int? errorCode = null) =>
         new(new ExecutionError(messages) { ErrorCode = errorCode });
 
-    public static ExecutionResult<TResult> Failure<TResult>(Exception exception) =>
+    public static ExecutionResult<TResult> Failure<TResult>(Exception exception) where TResult : notnull =>
         Failure<TResult>(GetExceptionMessages(exception));
 
-    public static ExecutionResult<TResult> Failure<TResult>(string message, Exception ex) =>
+    public static ExecutionResult<TResult> Failure<TResult>(string message, Exception ex) where TResult : notnull =>
         Failure<TResult>(new[] { message }.Concat(GetExceptionMessages(ex)));
 
-    public static ExecutionResult<TResult> Failure<TResult>(string message, int? errorCode = null) =>
+    public static ExecutionResult<TResult> Failure<TResult>(string message, int? errorCode = null) where TResult : notnull =>
         Failure<TResult>(new[] { message }, errorCode);
 
-    public static ExecutionResult<TResult> Failure<TResult>(IExecutionResult result, int? errorCode = null) =>
+    public static ExecutionResult<TResult> Failure<TResult>(IExecutionResult result, int? errorCode = null) where TResult : notnull =>
         Failure<TResult>(result.CheckedError.Messages, errorCode ?? result.CheckedError.ErrorCode);
 
     public static ExecutionResult Failure(IExecutionResult result, int? errorCode = null) =>

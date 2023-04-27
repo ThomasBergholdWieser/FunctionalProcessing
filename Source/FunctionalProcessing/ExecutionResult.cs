@@ -3,6 +3,8 @@
 namespace FunctionalProcessing;
 
 public record ExecutionResult<T>(ExecutionError? Error = null) : IExecutionResult
+    where T : notnull
+
 {
     protected T? Value { get; set; }
 
