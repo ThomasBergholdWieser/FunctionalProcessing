@@ -18,10 +18,9 @@ public sealed class FunctionalProcessingLoggingPipeline<TRequest, TResponse> : I
     {
         var response = await next();
 
-        if (this.logger.IsEnabled(LogLevel.Debug) &&
-            response is IExecutionResult { ExecutionFailed: true } executionResult)
+        if (response is IExecutionResult { ExecutionFailed: true, Error.Handled: not true } executionResult)
         {
-            this.logger.LogDebug(executionResult.CheckedError.Message);
+            this.logger.LogError(executionResult.CheckedError.Message);
         }
 
         return response;
