@@ -18,10 +18,24 @@ public sealed class FunctionalProcessingLoggingPipeline<TRequest, TResponse> : I
     {
         var response = await next();
 
-        if (response is IExecutionResult { ExecutionFailed: true, Error.Handled: not true } executionResult)
+        if (response is not IExecutionResult {ExecutionFailed: true} executionResult ||
+            executionResult.Error is null)
         {
-            this.logger.LogError(executionResult.CheckedError.Message);
+            return response;
         }
+
+        Action<ILogger, string, object[]> logFunc = executionResult.Error.LogLevel switch
+        {
+            LogLevel.Error => LoggerExtensions.LogError,
+            LogLevel.Trace => LoggerExtensions.LogTrace,
+            LogLevel.Debug => LoggerExtensions.LogDebug,
+            LogLevel.Information => LoggerExtensions.LogInformation,
+            LogLevel.Warning => LoggerExtensions.LogWarning,
+            LogLevel.Critical => LoggerExtensions.LogCritical,
+            _ => (_,_,_) => {  }
+        };
+
+        logFunc(this.logger, executionResult.Error.Message, Array.Empty<object>());
 
         return response;
     }

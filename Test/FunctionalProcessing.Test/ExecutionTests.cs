@@ -209,7 +209,7 @@ public class ExecutionTests
         var sut = new FunctionalProcessingLoggingPipeline<TestRequest, ExecutionResult>(loggerMonitor);
         var handler = A.Fake<RequestHandlerDelegate<ExecutionResult>>();
 
-        A.CallTo(() => handler.Invoke()).Returns(Execution.Failure("Test", suppressPipelineLogging: true));
+        A.CallTo(() => handler.Invoke()).Returns(Execution.Failure("Test", logLevel: LogLevel.None));
 
         await sut.Handle(new TestRequest(), handler, CancellationToken.None);
 
