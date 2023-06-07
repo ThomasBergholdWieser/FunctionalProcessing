@@ -1,4 +1,6 @@
-﻿namespace FunctionalProcessing;
+﻿using Microsoft.Extensions.Logging;
+
+namespace FunctionalProcessing;
 
 public record ExecutionError
 {
@@ -18,5 +20,5 @@ public record ExecutionError
 
     public int? ErrorCode { get; set; }
 
-    public bool? Handled { get; set; }
+    public LogLevel LogLevel { get; set; } = LogLevel.Error;
 }
