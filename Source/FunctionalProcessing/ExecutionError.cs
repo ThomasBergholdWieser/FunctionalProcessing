@@ -17,4 +17,6 @@ public record ExecutionError
     public IList<string> Messages { get; set; } = new List<string>();
 
     public int? ErrorCode { get; set; }
+
+    public bool? Handled { get; set; }
 }

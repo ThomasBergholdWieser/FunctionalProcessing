@@ -1,5 +1,10 @@
 ﻿using System;
+using FakeItEasy;
 using FluentAssertions;
+using FunctionalProcessing.Logging;
+using MediatR;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Xunit;
 
 namespace FunctionalProcessing.Test;
@@ -181,5 +186,51 @@ public class ExecutionTests
         result.ExecutionSucceeded.Should().BeFalse();
         result.ExecutionFailed.Should().BeTrue();
         result.Invoking(x => x.CheckedValue).Should().Throw<NullReferenceException>();
+    }
+
+    [Fact]
+    public async Task It_Should_Log_When_Not_Suppressed()
+    {
+        var loggerMonitor = new TestLogger();
+        var sut = new FunctionalProcessingLoggingPipeline<TestRequest, ExecutionResult>(loggerMonitor);
+        var handler = A.Fake<RequestHandlerDelegate<ExecutionResult>>();
+
+        A.CallTo(() => handler.Invoke()).Returns(Execution.Failure("Test"));
+
+        await sut.Handle(new TestRequest(), handler, CancellationToken.None);
+
+        loggerMonitor.Invocations.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public async Task It_Should_Not_Log_When_Suppressed()
+    {
+        var loggerMonitor = new TestLogger();
+        var sut = new FunctionalProcessingLoggingPipeline<TestRequest, ExecutionResult>(loggerMonitor);
+        var handler = A.Fake<RequestHandlerDelegate<ExecutionResult>>();
+
+        A.CallTo(() => handler.Invoke()).Returns(Execution.Failure("Test", suppressPipelineLogging: true));
+
+        await sut.Handle(new TestRequest(), handler, CancellationToken.None);
+
+        loggerMonitor.Invocations.Should().HaveCount(0);
+    }
+
+
+    class TestLogger : ILogger<TestRequest>
+    {
+        public readonly List<string> Invocations = new();
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) =>
+            Invocations.Add(formatter.Invoke(state, exception));
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+    }
+
+    class TestRequest : IRequest<ExecutionResult>
+    {
+
     }
 }
