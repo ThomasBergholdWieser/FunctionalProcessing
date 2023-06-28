@@ -21,7 +21,7 @@ public static class Execution
     public static ExecutionResult Failure(IEnumerable<string> messages, int? errorCode = null, LogLevel logLevel = LogLevel.Error) =>
         new(new ExecutionError(messages) { ErrorCode = errorCode, LogLevel = logLevel });
 
-    public static ExecutionResult<TResult> Failure<TResult>(Exception exception, LogLevel logLevel = LogLevel.Error) where TResult : notnull =>
+    public static ExecutionResult<TResult> Failure<TResult>(Exception exception, LogLevel logLevel = LogLevel.Error, bool suppressPipelineLogging = false) where TResult : notnull =>
         Failure<TResult>(GetExceptionMessages(exception), logLevel: logLevel);
 
     public static ExecutionResult<TResult> Failure<TResult>(string message, Exception ex, LogLevel logLevel = LogLevel.Error) where TResult : notnull =>
@@ -34,7 +34,7 @@ public static class Execution
         Failure<TResult>(result.CheckedError.Messages, errorCode ?? result.CheckedError.ErrorCode, logLevel);
 
     public static ExecutionResult Failure(IExecutionResult result, int? errorCode = null, LogLevel logLevel = LogLevel.Error) =>
-        Failure(result.CheckedError.Messages, errorCode ?? result.CheckedError.ErrorCode, logLevel);
+        Failure(result.CheckedError.Messages, result.CheckedError.Logged, errorCode ?? result.CheckedError.ErrorCode, logLevel);
 
     public static ExecutionResult Failure(string message, int? errorCode = null, LogLevel logLevel = LogLevel.Error) =>
         Failure(new[] { message }, errorCode, logLevel);
@@ -54,6 +54,9 @@ public static class Execution
     public static string ToStatusCodeText(HttpStatusCode statusCode) =>
         Regex.Replace(statusCode.ToString(), "(?<=[a-z])([A-Z])", " $1", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
+    private static ExecutionResult Failure(IEnumerable<string> messages, bool logged, int? errorCode, LogLevel logLevel) =>
+        new(new ExecutionError(messages) { ErrorCode = errorCode, LogLevel = logLevel, Logged = logged });
+    
     private static int? ConcatErrorCode<T>(params T[] results)
         where T : IExecutionResult =>
         results.Select(x => x.Error?.ErrorCode).FirstOrDefault(x => x is not null);
