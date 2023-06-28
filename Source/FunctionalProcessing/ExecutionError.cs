@@ -21,4 +21,6 @@ public record ExecutionError
     public int? ErrorCode { get; set; }
 
     public LogLevel LogLevel { get; set; } = LogLevel.Error;
+
+    internal bool Logged { get; set; } = false;
 }

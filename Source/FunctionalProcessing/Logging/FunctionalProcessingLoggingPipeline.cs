@@ -1,4 +1,5 @@
-﻿using FunctionalProcessing.Interfaces;
+﻿using FunctionalProcessing.Extensions;
+using FunctionalProcessing.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -19,23 +20,13 @@ public sealed class FunctionalProcessingLoggingPipeline<TRequest, TResponse> : I
         var response = await next();
 
         if (response is not IExecutionResult {ExecutionFailed: true} executionResult ||
-            executionResult.Error is null)
+            executionResult.Error is null ||
+            executionResult.Error.Logged)
         {
             return response;
         }
 
-        Action<ILogger, string, object[]> logFunc = executionResult.Error.LogLevel switch
-        {
-            LogLevel.Error => LoggerExtensions.LogError,
-            LogLevel.Trace => LoggerExtensions.LogTrace,
-            LogLevel.Debug => LoggerExtensions.LogDebug,
-            LogLevel.Information => LoggerExtensions.LogInformation,
-            LogLevel.Warning => LoggerExtensions.LogWarning,
-            LogLevel.Critical => LoggerExtensions.LogCritical,
-            _ => (_,_,_) => {  }
-        };
-
-        logFunc(this.logger, executionResult.Error.Message, Array.Empty<object>());
+        executionResult.Log(logger);
 
         return response;
     }
