@@ -30,8 +30,9 @@ public static class Execution
     public static ExecutionResult<TResult> Failure<TResult>(string message, int? errorCode = null, LogLevel logLevel = LogLevel.Error) where TResult : notnull =>
         Failure<TResult>(new[] { message }, errorCode, logLevel);
 
-    public static ExecutionResult<TResult> Failure<TResult>(IExecutionResult result, int? errorCode = null, LogLevel logLevel = LogLevel.Error) where TResult : notnull =>
-        Failure<TResult>(result.CheckedError.Messages, errorCode ?? result.CheckedError.ErrorCode, logLevel);
+    public static ExecutionResult<TResult> Failure<TResult>(IExecutionResult result, int? errorCode = null,
+	    LogLevel logLevel = LogLevel.Error) where TResult : notnull => 
+		Failure<TResult>(result.CheckedError.Messages, result.CheckedError.Logged, errorCode ?? result.CheckedError.ErrorCode, logLevel);
 
     public static ExecutionResult Failure(IExecutionResult result, int? errorCode = null, LogLevel logLevel = LogLevel.Error) =>
         Failure(result.CheckedError.Messages, result.CheckedError.Logged, errorCode ?? result.CheckedError.ErrorCode, logLevel);
@@ -54,7 +55,10 @@ public static class Execution
     public static string ToStatusCodeText(HttpStatusCode statusCode) =>
         Regex.Replace(statusCode.ToString(), "(?<=[a-z])([A-Z])", " $1", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
-    private static ExecutionResult Failure(IEnumerable<string> messages, bool logged, int? errorCode, LogLevel logLevel) =>
+    private static ExecutionResult<T> Failure<T>(IEnumerable<string> messages, bool logged, int? errorCode, LogLevel logLevel) where T : notnull =>
+	    new(new ExecutionError(messages) { ErrorCode = errorCode, LogLevel = logLevel, Logged = logged });
+
+	private static ExecutionResult Failure(IEnumerable<string> messages, bool logged, int? errorCode, LogLevel logLevel) =>
         new(new ExecutionError(messages) { ErrorCode = errorCode, LogLevel = logLevel, Logged = logged });
     
     private static int? ConcatErrorCode<T>(params T[] results)
