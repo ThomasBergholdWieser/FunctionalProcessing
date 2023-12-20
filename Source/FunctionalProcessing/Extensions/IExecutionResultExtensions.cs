@@ -25,21 +25,44 @@ public static class IExecutionResultExtensions
             return result;
         }
 
-        Action<ILogger, string, object[]> logFunc = result.Error.LogLevel switch
+        Action<ILogger, string> logFunc = result.Error.LogLevel switch
         {
-            LogLevel.Error => LoggerExtensions.LogError,
-            LogLevel.Trace => LoggerExtensions.LogTrace,
-            LogLevel.Debug => LoggerExtensions.LogDebug,
-            LogLevel.Information => LoggerExtensions.LogInformation,
-            LogLevel.Warning => LoggerExtensions.LogWarning,
-            LogLevel.Critical => LoggerExtensions.LogCritical,
-            _ => (_, _, _) => { }
+            LogLevel.Error => LogExtensions.Error,
+            LogLevel.Trace => LogExtensions.Trace,
+            LogLevel.Debug => LogExtensions.Debug,
+            LogLevel.Information => LogExtensions.Information,
+            LogLevel.Warning => LogExtensions.Warning,
+            LogLevel.Critical => LogExtensions.Critical,
+            LogLevel.None => (_,_) => {  },
+            _ => throw new ArgumentOutOfRangeException()
         };
 
-        logFunc(logger, result.Error.Message, Array.Empty<object>());
+        logFunc(logger, result.Error.Message);
 
         result.CheckedError.Logged = true;
 
         return result;
     }
+}
+
+static partial class LogExtensions
+{
+    [LoggerMessage(LogLevel.Information, "ExecutionResult: {Message}")]
+    public static partial void Information(this ILogger logger, string message);
+
+    [LoggerMessage(LogLevel.Error, "ExecutionResult: {Message}")]
+    public static partial void Error(this ILogger logger, string message);
+
+    [LoggerMessage(LogLevel.Debug, "ExecutionResult: {Message}")]
+    public static partial void Debug(this ILogger logger, string message);
+
+    [LoggerMessage(LogLevel.Warning, "ExecutionResult: {Message}")]
+    public static partial void Warning(this ILogger logger, string message);
+
+    [LoggerMessage(LogLevel.Critical, "ExecutionResult: {Message}")]
+    public static partial void Critical(this ILogger logger, string message);
+
+    [LoggerMessage(LogLevel.Trace, "ExecutionResult: {Message}")]
+    public static partial void Trace(this ILogger logger, string message);
+
 }

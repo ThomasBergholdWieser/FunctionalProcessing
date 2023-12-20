@@ -1,7 +1,7 @@
-﻿using System.Net;
-using System.Text.RegularExpressions;
-using FunctionalProcessing.Interfaces;
+﻿using FunctionalProcessing.Interfaces;
 using Microsoft.Extensions.Logging;
+using System.Net;
+using System.Text.RegularExpressions;
 
 namespace FunctionalProcessing;
 
@@ -11,7 +11,6 @@ public static class Execution
 
     public static ExecutionResult<TResult> Success<TResult>(TResult value) where TResult : notnull => value;
         
-
     public static ExecutionResult Success() =>
         VoidSuccess;
 
