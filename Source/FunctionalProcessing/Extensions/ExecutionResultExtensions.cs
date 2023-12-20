@@ -1,18 +1,14 @@
-﻿using FunctionalProcessing.Interfaces;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace FunctionalProcessing.Extensions;
 
-public static class IExecutionResultExtensions
+public static class ExecutionResultExtensions
 {
-    public static ExecutionResult Reduce(this IExecutionResult? source) =>
-        new() { Error = source?.Error };
-
-    public static Task<T> AsTask<T>(this T source) where T : IExecutionResult =>
+    public static Task<T> AsTask<T>(this T source) where T : ExecutionResult =>
         Task.FromResult(source);
 
     public static T Log<T>(this T result, ILogger logger)
-        where T : IExecutionResult
+        where T : ExecutionResult
     {
         if (result.ExecutionSucceeded)
         {
@@ -64,5 +60,4 @@ static partial class LogExtensions
 
     [LoggerMessage(LogLevel.Trace, "ExecutionResult: {Message}")]
     public static partial void Trace(this ILogger logger, string message);
-
 }

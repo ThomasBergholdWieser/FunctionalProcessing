@@ -1,5 +1,4 @@
-﻿using FunctionalProcessing.Interfaces;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text.RegularExpressions;
 
@@ -29,11 +28,11 @@ public static class Execution
     public static ExecutionResult<TResult> Failure<TResult>(string message, int? errorCode = null, LogLevel logLevel = LogLevel.Error) where TResult : notnull =>
         Failure<TResult>(new[] { message }, errorCode, logLevel);
 
-    public static ExecutionResult<TResult> Failure<TResult>(IExecutionResult result, int? errorCode = null,
+    public static ExecutionResult<TResult> Failure<TResult>(ExecutionResult result, int? errorCode = null,
 	    LogLevel logLevel = LogLevel.Error) where TResult : notnull => 
 		Failure<TResult>(result.CheckedError.Messages, result.CheckedError.Logged, errorCode ?? result.CheckedError.ErrorCode, logLevel);
 
-    public static ExecutionResult Failure(IExecutionResult result, int? errorCode = null, LogLevel logLevel = LogLevel.Error) =>
+    public static ExecutionResult Failure(ExecutionResult result, int? errorCode = null, LogLevel logLevel = LogLevel.Error) =>
         Failure(result.CheckedError.Messages, result.CheckedError.Logged, errorCode ?? result.CheckedError.ErrorCode, logLevel);
 
     public static ExecutionResult Failure(string message, int? errorCode = null, LogLevel logLevel = LogLevel.Error) =>
@@ -46,7 +45,7 @@ public static class Execution
         Failure(GetExceptionMessages(ex).ToArray(), errorCode, logLevel);
 
     public static ExecutionResult Combine<T>(params T[] results)
-        where T : IExecutionResult =>
+        where T : ExecutionResult =>
         results.All(x => x.ExecutionSucceeded)
             ? Success()
             : Failure(ConcatMessages(results), ConcatErrorCode(results));
@@ -61,11 +60,11 @@ public static class Execution
         new(new ExecutionError(messages) { ErrorCode = errorCode, LogLevel = logLevel, Logged = logged });
     
     private static int? ConcatErrorCode<T>(params T[] results)
-        where T : IExecutionResult =>
+        where T : ExecutionResult =>
         results.Select(x => x.Error?.ErrorCode).FirstOrDefault(x => x is not null);
 
     private static List<string> ConcatMessages<T>(params T[] results)
-        where T : IExecutionResult =>
+        where T : ExecutionResult =>
         results.SelectMany(x => x.Error?.Messages ?? new List<string>()).ToList();
 
     private static IEnumerable<string> GetExceptionMessages(Exception ex)
