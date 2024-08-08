@@ -19,7 +19,7 @@ public sealed class FunctionalProcessingLoggingPipeline<TRequest, TResponse>(ILo
             return response;
         }
 
-        if (response is ExecutionResult {ExecutionFailed: true} && 
+        if (response is ExecutionResult {ExecutionFailed: true} || 
             response.NoLogFlag != true)
         {
             executionResult.Log(logger);
