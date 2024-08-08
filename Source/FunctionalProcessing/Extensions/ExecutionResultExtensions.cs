@@ -7,7 +7,7 @@ public static class ExecutionResultExtensions
     public static T NoLog<T>(this T result)
         where T : ExecutionResult
     {
-        result.NoLogFlag = true;
+        result.NoLog = true;
         return result;
     }
     

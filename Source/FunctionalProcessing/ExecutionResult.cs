@@ -20,7 +20,7 @@ public record ExecutionResult<T>(ExecutionError? Error = null) : ExecutionResult
 
 public record ExecutionResult(ExecutionError? Error = null)
 {
-	protected internal bool? NoLogFlag { get; set; }
+	public bool? NoLog { get; internal set; }
 	
     public virtual bool ExecutionSucceeded => this.Error is null;
 
