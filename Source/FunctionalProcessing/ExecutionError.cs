@@ -22,5 +22,5 @@ public record ExecutionError
 
     public LogLevel LogLevel { get; set; } = LogLevel.Error;
 
-    internal bool Logged { get; set; } = false;
+    public bool Logged { get; internal set; } = false;
 }
