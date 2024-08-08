@@ -4,6 +4,13 @@ namespace FunctionalProcessing.Extensions;
 
 public static class ExecutionResultExtensions
 {
+    public static T NoLog<T>(this T result)
+        where T : ExecutionResult
+    {
+        result.NoLogFlag = true;
+        return result;
+    }
+    
     public static Task<T> AsTask<T>(this T source) where T : ExecutionResult =>
         Task.FromResult(source);
 
