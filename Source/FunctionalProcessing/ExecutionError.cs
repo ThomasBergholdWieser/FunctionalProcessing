@@ -2,21 +2,32 @@
 
 namespace FunctionalProcessing;
 
-public record ExecutionError
+public record ExecutionError : ExecutionError<string>
 {
-    public ExecutionError(IEnumerable<string> messages)
+    public ExecutionError(IEnumerable<string> messages) : base(messages)
+    {
+    }
+
+    public ExecutionError(params string[] messages) : base(messages)
+    {
+    }
+}
+
+public record ExecutionError<T>
+{
+    public ExecutionError(IEnumerable<T> messages)
     {
         this.Messages = messages.ToArray();
     }
 
-    public ExecutionError(params string[] messages)
+    public ExecutionError(params T[] messages)
         : this(messages.AsEnumerable())
     {
     }
 
     public string Message => string.Join("; ", this.Messages);
 
-    public IList<string> Messages { get; set; } = new List<string>();
+    public IList<T> Messages { get; set; } = new List<T>();
 
     public int? ErrorCode { get; set; }
 
