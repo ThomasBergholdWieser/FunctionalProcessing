@@ -27,7 +27,7 @@ jobs:
     - name: Pack template project 
       run: dotnet pack ./Source/FunctionalProcessing --configuration=Release --output=./Artefacts
     - name: "Publish Artefacts"
-      uses: actions/upload-artifact@v2.2.4 
+      uses: actions/upload-artifact@v4
       with:
         name: "drop"
         path: "./Artefacts"
