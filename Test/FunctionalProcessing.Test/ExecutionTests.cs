@@ -195,7 +195,8 @@ public class ExecutionTests
         var sut = new FunctionalProcessingLoggingPipeline<TestRequest, ExecutionResult>(loggerMonitor);
         var handler = A.Fake<RequestHandlerDelegate<ExecutionResult>>();
 
-        A.CallTo(() => handler.Invoke()).Returns(Execution.Failure("Test"));
+        // Fix for CS0854: Remove optional arguments by explicitly specifying them
+        A.CallTo(() => handler.Invoke(CancellationToken.None)).Returns(Execution.Failure("Test", null, LogLevel.Error));
 
         await sut.Handle(new TestRequest(), handler, CancellationToken.None);
 
@@ -209,7 +210,7 @@ public class ExecutionTests
         var sut = new FunctionalProcessingLoggingPipeline<TestRequest, ExecutionResult>(loggerMonitor);
         var handler = A.Fake<RequestHandlerDelegate<ExecutionResult>>();
 
-        A.CallTo(() => handler.Invoke()).Returns(Execution.Failure("Test", logLevel: LogLevel.None));
+        A.CallTo(() => handler.Invoke(CancellationToken.None)).Returns(Execution.Failure("Test", logLevel: LogLevel.None));
 
         await sut.Handle(new TestRequest(), handler, CancellationToken.None);
 
